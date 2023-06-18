@@ -1,0 +1,6 @@
+.env
+tmp/*
+__pychache__/
+app/chat_app/data/*
+app/diffusion_app/data/*
+plan.txt

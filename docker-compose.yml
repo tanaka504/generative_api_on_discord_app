@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  discordapi:
+    container_name: discord-app
+    build:
+      context: .
+      dockerfile: ./docker/discord_app/Dockerfile
+    volumes:
+      - ./app/discord_app:/workspace
+      - ./tmp:/workspace/tmp
+    env_file:
+      - '.env'
+    entrypoint: >
+      /bin/bash -c "pip install -r requirements.txt && python server.py"
+
+  diffusion_api:
+    container_name: diffusion-app
+    build:
+      context: .
+      dockerfile: ./docker/diffusion_app/Dockerfile
+    volumes:
+      - ./app/diffusion_app:/workspace
+      - ./tmp:/workspace/tmp
+    ports:
+      - "5050:5050"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu]
+    entrypoint: >
+      /bin/bash -c "python3 server.py"
+
+  # chat_api:
+  #   container_name: chat-app
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/chat_app/Dockerfile
+  #   volumes:
+  #     - ./app/chat_app:/workspace
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     - RWKV_JIT_ON=1
+  #     - RWKV_CUDA_ON=0
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             device_ids: ['0']
+  #             capabilities: [gpu]
+  #   entrypoint: >
+  #     /bin/bash -c "python3 server.py"
+
